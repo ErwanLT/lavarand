@@ -1,4 +1,4 @@
-package fr.eletutour.lavalamp;
+package fr.eletutour.lavalamp.simulation;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

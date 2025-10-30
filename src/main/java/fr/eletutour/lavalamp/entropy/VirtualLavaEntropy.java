@@ -1,4 +1,4 @@
-package fr.eletutour.lavalamp;
+package fr.eletutour.lavalamp.entropy;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;

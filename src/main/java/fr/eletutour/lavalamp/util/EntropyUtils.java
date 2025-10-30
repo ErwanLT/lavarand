@@ -1,4 +1,4 @@
-package fr.eletutour.lavalamp;
+package fr.eletutour.lavalamp.util;
 
 import java.security.MessageDigest;
 import java.util.Arrays;

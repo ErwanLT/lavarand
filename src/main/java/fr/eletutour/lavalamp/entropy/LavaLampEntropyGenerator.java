@@ -1,4 +1,8 @@
-package fr.eletutour.lavalamp;
+package fr.eletutour.lavalamp.entropy;
+
+import fr.eletutour.lavalamp.crypto.HmacDRBG;
+import fr.eletutour.lavalamp.simulation.LavaLampSimulator;
+import fr.eletutour.lavalamp.util.EntropyUtils;
 
 import java.awt.image.BufferedImage;
 import java.security.SecureRandom;

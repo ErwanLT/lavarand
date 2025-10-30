@@ -1,4 +1,7 @@
-package fr.eletutour.lavalamp;
+package fr.eletutour.lavalamp.app;
+
+
+import fr.eletutour.lavalamp.entropy.LavaLampEntropyGenerator;
 
 import java.util.HexFormat;
 import java.util.concurrent.TimeUnit;

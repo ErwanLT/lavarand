@@ -1,4 +1,4 @@
-package fr.eletutour.lavalamp;
+package fr.eletutour.lavalamp.crypto;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;

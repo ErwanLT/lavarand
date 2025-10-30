@@ -1,4 +1,7 @@
-package fr.eletutour.lavalamp;
+package fr.eletutour.lavalamp.app;
+
+
+import fr.eletutour.lavalamp.entropy.LavaLampEntropyGenerator;
 
 import javax.swing.*;
 import java.awt.*;
