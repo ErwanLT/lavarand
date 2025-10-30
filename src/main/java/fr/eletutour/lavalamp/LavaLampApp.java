@@ -10,24 +10,20 @@ import java.util.concurrent.TimeUnit;
 
 public class LavaLampApp extends JPanel {
 
-    private final LavaLampSimulator simulator;
+    private final LavaLampEntropyGenerator entropyGenerator;
 
-    public LavaLampApp(LavaLampSimulator simulator, VirtualLavaEntropy entropyCollector, HmacDRBG drbg) {
-        this.simulator = simulator;
+    public LavaLampApp(LavaLampEntropyGenerator entropyGenerator) {
+        this.entropyGenerator = entropyGenerator;
 
-        // Animation timer (redraw ~30 FPS)
+        // Timer pour l'animation (redessiner à ~30 FPS)
         Timer timer = new Timer(33, e -> repaint());
         timer.start();
 
-        // Entropy collection every 3 seconds
+        // Collecte d'entropie toutes les 3 secondes
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             try {
-                BufferedImage snapshot = simulator.stepAndRender();
-                byte[] entropy = entropyCollector.snapshotToBytes(snapshot, 4);
-                byte[] whitened = EntropyUtils.sha256(entropy);
-                drbg.reseed(whitened);
-
-                byte[] random = drbg.generate(16);
+                // La méthode `mixEntropyAndGenerate` s'occupe de tout le cycle
+                byte[] random = entropyGenerator.mixEntropyAndGenerate(48);
                 System.out.println("Entropy mixed (" + random.length + " bytes): "
                         + HexFormat.of().formatHex(random));
             } catch (Exception ex) {
@@ -39,26 +35,27 @@ public class LavaLampApp extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        BufferedImage frame = simulator.stepAndRender();
+        // On récupère le simulateur depuis le générateur pour le rendu
+        BufferedImage frame = entropyGenerator.getSimulator().stepAndRender();
         g.drawImage(frame, 0, 0, getWidth(), getHeight(), null);
     }
 
-
     static void main(String[] args) {
-        // Initialisation du simulateur
+        // Paramètres
         int width = 640, height = 480;
+        int nbBlobs = 16;
+        int qualityFactor = 4;
+
+        // Graine initiale
         byte[] seed = new byte[32];
         new SecureRandom().nextBytes(seed);
 
-        LavaLampSimulator simulator = new LavaLampSimulator(width, height, 6, seed);
-        VirtualLavaEntropy entropyCollector = new VirtualLavaEntropy();
+        // Initialisation du générateur d'entropie unifié
+        LavaLampEntropyGenerator entropyGenerator = new LavaLampEntropyGenerator(width, height, nbBlobs, qualityFactor, seed);
 
-        byte[] firstSnapshot = entropyCollector.snapshotToBytes(simulator.stepAndRender(), 4);
-        byte[] firstSeed = EntropyUtils.sha256(firstSnapshot);
-        HmacDRBG drbg = new HmacDRBG(firstSeed);
-
+        // Création de la fenêtre
         JFrame frame = new JFrame("Lampe à lave virtuelle — Entropie vivante");
-        LavaLampApp panel = new LavaLampApp(simulator, entropyCollector, drbg);
+        LavaLampApp panel = new LavaLampApp(entropyGenerator);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(width, height);
