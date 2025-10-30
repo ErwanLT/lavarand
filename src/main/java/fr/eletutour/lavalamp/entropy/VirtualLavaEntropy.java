@@ -1,9 +1,12 @@
 package fr.eletutour.lavalamp.entropy;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import javax.imageio.ImageIO;
 
 /**
  * Transforme un BufferedImage de la lampe virtuelle en chunk d'entropie brut.
@@ -51,5 +54,20 @@ public class VirtualLavaEntropy {
         // wipe sensitive buffers if needed (not strictly necessary in Java GC)
         Arrays.fill(noise, (byte) 0);
         return out;
+    }
+
+    /**
+     * Sauvegarde un BufferedImage dans un fichier PNG.
+     * @param img L'image à sauvegarder.
+     * @param filename Le chemin du fichier où sauvegarder l'image.
+     */
+    public void saveSnapshot(BufferedImage img, String filename) {
+        try {
+            File outputfile = new File(filename);
+            ImageIO.write(img, "png", outputfile);
+            System.out.println("Snapshot saved to: " + filename);
+        } catch (IOException e) {
+            System.err.println("Error saving snapshot: " + e.getMessage());
+        }
     }
 }

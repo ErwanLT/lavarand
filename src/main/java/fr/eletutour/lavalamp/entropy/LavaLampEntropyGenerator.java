@@ -6,6 +6,8 @@ import fr.eletutour.lavalamp.util.EntropyUtils;
 
 import java.awt.image.BufferedImage;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Encapsule la logique de génération d'entropie à partir de la simulation
@@ -17,6 +19,8 @@ public class LavaLampEntropyGenerator {
     private final VirtualLavaEntropy entropyCollector;
     private final HmacDRBG drbg;
     private final int qualityFactor;
+    private int generationCount = 0;
+    private static final int SAVE_INTERVAL = 5; // Save every 5 generations
 
     public LavaLampEntropyGenerator(int width, int height, int nbBlobs, int qualityFactor, byte[] initialSeed) {
         this.simulator = new LavaLampSimulator(width, height, nbBlobs, initialSeed);
@@ -57,7 +61,17 @@ public class LavaLampEntropyGenerator {
         drbg.reseed(EntropyUtils.sha256(toReseed));
 
         // Génère et retourne les octets
-        return drbg.generate(numBytes);
+        byte[] generatedBytes = drbg.generate(numBytes);
+
+        // Sauvegarde l'image périodiquement pour inspection
+        generationCount++;
+        if (generationCount % SAVE_INTERVAL == 0) {
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS"));
+            String filename = "snapshot_" + timestamp + ".png";
+            entropyCollector.saveSnapshot(snap, filename);
+        }
+
+        return generatedBytes;
     }
 
     /**

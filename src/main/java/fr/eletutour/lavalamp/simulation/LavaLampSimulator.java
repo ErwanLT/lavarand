@@ -47,8 +47,8 @@ public class LavaLampSimulator {
             b.vx = (secureRandom.nextDouble() - 0.5) * 0.2;
             b.vy = (secureRandom.nextDouble() - 0.5) * 0.2;
             b.radius = 0.08 + secureRandom.nextDouble() * 0.2;
-            // choose warm palette color with alpha
-            float h = (float) (secureRandom.nextDouble() * 0.15 + 0.02f); // reds/oranges
+            // choose blue palette color with alpha
+            float h = (float) (secureRandom.nextDouble() * 0.15 + 0.55f); // shades of blue
             float s = (float) (0.7 + secureRandom.nextDouble() * 0.3);
             float br = (float) (0.6 + secureRandom.nextDouble() * 0.4);
             b.color = Color.getHSBColor(h, s, br);
@@ -89,7 +89,7 @@ public class LavaLampSimulator {
         try {
             // background (dark)
             g.setComposite(AlphaComposite.SrcOver);
-            g.setColor(new Color(12, 12, 20));
+            g.setColor(new Color(0, 0, 0));
             g.fillRect(0, 0, width, height);
 
             // render blobs with additive blending for lava-like glow
@@ -104,7 +104,7 @@ public class LavaLampSimulator {
 
             // slight global blur effect imitation: draw a translucent overlay
             g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.06f));
-            g.setColor(new Color(255, 140, 0));
+            g.setColor(new Color(0, 191, 255)); // Deep Sky Blue
             // draw a very faint gradient to simulate light diffusion
             g.fillOval(width/4, height/4, width/2, height/2);
         } finally {
