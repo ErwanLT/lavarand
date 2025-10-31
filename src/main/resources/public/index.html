@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Lava Lamp Entropy</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f0f0f0; text-align: center; }
+        #main-container { background-color: white; padding: 20px; border-radius: 8px; display: inline-block; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        #lamps-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 15px; }
+        canvas { border: 1px solid #ccc; background-color: black; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; border: none; background-color: #007bff; color: white; border-radius: 4px; margin-top: 10px; }
+        #output { margin-top: 20px; font-family: monospace; word-break: break-all; background-color: #eee; padding: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div id="main-container">
+        <h1>Lava Lamp Entropy</h1>
+        <div id="lamps-container"></div>
+        <button id="getRandomBtn">Générer 32 octets aléatoires</button>
+        <div id="output"></div>
+    </div>
+
+    <script>
+        const NUM_LAMPS = 4;
+        const lampsContainer = document.getElementById('lamps-container');
+        const getRandomBtn = document.getElementById('getRandomBtn');
+        const outputDiv = document.getElementById('output');
+        const lampContexts = [];
+
+        // Initialiser les canvas pour chaque lampe
+        for (let i = 0; i < NUM_LAMPS; i++) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 192;
+            canvas.id = 'lavaCanvas-' + i;
+            lampsContainer.appendChild(canvas);
+            lampContexts.push(canvas.getContext('2d'));
+        }
+
+        // Fonction pour rafraîchir l'image d'une lampe spécifique
+        async function refreshLamp(lampId) {
+            try {
+                const response = await fetch(`/api/frame?id=${lampId}`);
+                const data = await response.json();
+                const img = new Image();
+                img.src = 'data:image/png;base64,' + data.image;
+                img.onload = () => {
+                    const ctx = lampContexts[data.id];
+                    if (ctx) {
+                        ctx.drawImage(img, 0, 0, ctx.canvas.width, ctx.canvas.height);
+                    }
+                };
+            } catch (error) {
+                console.error(`Erreur lors du rafraîchissement de la lampe ${lampId}:`, error);
+                const ctx = lampContexts[lampId];
+                if (ctx) {
+                    ctx.fillStyle = 'red';
+                    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                }
+            }
+        }
+
+        // Fonction pour rafraîchir toutes les lampes
+        function refreshAllLamps() {
+            for (let i = 0; i < NUM_LAMPS; i++) {
+                refreshLamp(i);
+            }
+        }
+
+        // Fonction pour obtenir des nombres aléatoires
+        async function getRandom() {
+            try {
+                outputDiv.textContent = 'Génération...';
+                const response = await fetch('/api/random?bytes=32');
+                const data = await response.json();
+                outputDiv.textContent = data.random;
+            } catch (error) {
+                console.error('Erreur lors de la génération des nombres aléatoires:', error);
+                outputDiv.textContent = 'Erreur.';
+            }
+        }
+
+        // Événements
+        getRandomBtn.addEventListener('click', getRandom);
+
+        // Démarrer le rafraîchissement des simulations (toutes les 100ms)
+        setInterval(refreshAllLamps, 100);
+
+        // Afficher les premières images au chargement
+        refreshAllLamps();
+    </script>
+</body>
+</html>
