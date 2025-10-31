@@ -28,11 +28,17 @@ public class LavaLampSimulator {
     private final SecureRandom secureRandom;
     private final double damping = 0.999;
     private long lastUpdateNs;
+    private final Color fixedColor;
 
     public LavaLampSimulator(int width, int height, int nbBlobs, byte[] seed) {
+        this(width, height, nbBlobs, seed, null);
+    }
+
+    public LavaLampSimulator(int width, int height, int nbBlobs, byte[] seed, Color fixedColor) {
         this.width = width;
         this.height = height;
         this.secureRandom = new SecureRandom(seed != null ? seed : SecureRandom.getSeed(16));
+        this.fixedColor = fixedColor;
         initBlobs(nbBlobs);
         this.lastUpdateNs = System.nanoTime();
     }
@@ -47,11 +53,17 @@ public class LavaLampSimulator {
             b.vx = (secureRandom.nextDouble() - 0.5) * 0.2;
             b.vy = (secureRandom.nextDouble() - 0.5) * 0.2;
             b.radius = 0.08 + secureRandom.nextDouble() * 0.2;
-            // choose blue palette color with alpha
-            float h = (float) (secureRandom.nextDouble() * 0.15 + 0.55f); // shades of blue
-            float s = (float) (0.7 + secureRandom.nextDouble() * 0.3);
-            float br = (float) (0.6 + secureRandom.nextDouble() * 0.4);
-            b.color = Color.getHSBColor(h, s, br);
+            if (fixedColor != null) {
+                float[] hsb = Color.RGBtoHSB(fixedColor.getRed(), fixedColor.getGreen(), fixedColor.getBlue(), null);
+                float newBrightness = (float) (hsb[2] * (0.5 + secureRandom.nextDouble() * 0.5));
+                b.color = Color.getHSBColor(hsb[0], hsb[1], newBrightness);
+            } else {
+                // choose a random palette color with alpha
+                float h = secureRandom.nextFloat(); // random hue
+                float s = (float) (0.7 + secureRandom.nextDouble() * 0.3);
+                float br = (float) (0.6 + secureRandom.nextDouble() * 0.4);
+                b.color = Color.getHSBColor(h, s, br);
+            }
             blobs.add(b);
         }
     }
@@ -104,7 +116,7 @@ public class LavaLampSimulator {
 
             // slight global blur effect imitation: draw a translucent overlay
             g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.06f));
-            g.setColor(new Color(0, 191, 255)); // Deep Sky Blue
+            g.setColor(new Color(200, 200, 200)); // Light gray
             // draw a very faint gradient to simulate light diffusion
             g.fillOval(width/4, height/4, width/2, height/2);
         } finally {
@@ -114,12 +126,17 @@ public class LavaLampSimulator {
     }
 
     private void drawSoftBlob(Graphics2D g, int cx, int cy, int r, Color color) {
+        float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
         // draw concentric circles with decreasing alpha for soft edges
         for (int i = r; i > 0; i -= Math.max(1, r / 12)) {
             float alpha = Math.max(0.02f, (float) i / r * 0.6f);
-            Color c = new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.min(255, (int)(alpha*255)));
+
+            // Create a gradient effect by varying brightness
+            float brightness = hsb[2] * (0.5f + (1.0f - (float)i / r) * 1.0f);
+            Color c = Color.getHSBColor(hsb[0], hsb[1], Math.min(1.0f, brightness));
+
             g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-            g.setColor(c);
+            g.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), Math.min(255, (int)(alpha*255))));
             int d = i * 2;
             g.fillOval(cx - i, cy - i, d, d);
         }

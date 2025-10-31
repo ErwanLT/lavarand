@@ -4,6 +4,7 @@ import fr.eletutour.lavalamp.crypto.HmacDRBG;
 import fr.eletutour.lavalamp.simulation.LavaLampSimulator;
 import fr.eletutour.lavalamp.util.EntropyUtils;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -23,7 +24,11 @@ public class LavaLampEntropyGenerator {
     private static final int SAVE_INTERVAL = 5; // Save every 5 generations
 
     public LavaLampEntropyGenerator(int width, int height, int nbBlobs, int qualityFactor, byte[] initialSeed) {
-        this.simulator = new LavaLampSimulator(width, height, nbBlobs, initialSeed);
+        this(width, height, nbBlobs, qualityFactor, initialSeed, null);
+    }
+
+    public LavaLampEntropyGenerator(int width, int height, int nbBlobs, int qualityFactor, byte[] initialSeed, java.awt.Color fixedColor) {
+        this.simulator = new LavaLampSimulator(width, height, nbBlobs, initialSeed, fixedColor);
         this.entropyCollector = new VirtualLavaEntropy();
         this.qualityFactor = qualityFactor;
 

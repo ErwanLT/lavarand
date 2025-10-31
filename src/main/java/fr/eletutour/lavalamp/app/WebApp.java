@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import fr.eletutour.lavalamp.entropy.LavaLampEntropyGenerator;
 
 import javax.imageio.ImageIO;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.security.SecureRandom;
@@ -17,15 +18,16 @@ import static spark.Spark.*;
 
 public class WebApp {
 
-    private static final int NUM_LAMPS = 4;
+    private static final int NUM_LAMPS = 10;
     private static final Map<Integer, LavaLampEntropyGenerator> entropyGenerators = new ConcurrentHashMap<>();
 
     public static void main(String[] args) {
         // Initialisation des générateurs d'entropie
         int width = 256, height = 192;
+        Color[] colors = {Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE, Color.MAGENTA, Color.CYAN};
         IntStream.range(0, NUM_LAMPS).forEach(i -> {
             LavaLampEntropyGenerator generator = new LavaLampEntropyGenerator(
-                    width, height, 12, 8, SecureRandom.getSeed(32)
+                    width, height, 12, 8, SecureRandom.getSeed(32), colors[i % colors.length]
             );
             entropyGenerators.put(i, generator);
         });
