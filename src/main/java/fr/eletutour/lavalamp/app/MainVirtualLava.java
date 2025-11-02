@@ -22,7 +22,9 @@ public class MainVirtualLava {
         for (int i = 0; i < 8; i++) initialSeed[i] ^= (byte) ((t >> (i * 8)) & 0xff);
 
         // Initialisation du générateur d'entropie
-        LavaLampEntropyGenerator entropyGenerator = new LavaLampEntropyGenerator(width, height, nbBlobs, qualityFactor, initialSeed);
+        java.awt.Color color1 = new java.awt.Color(255, 100, 0); // Orange
+        java.awt.Color color2 = new java.awt.Color(0, 50, 255);   // Bleu
+        LavaLampEntropyGenerator entropyGenerator = new LavaLampEntropyGenerator(width, height, nbBlobs, qualityFactor, initialSeed, color1, color2);
 
         System.out.println("Générateur initialisé. Démarrage des cycles de génération...");
 

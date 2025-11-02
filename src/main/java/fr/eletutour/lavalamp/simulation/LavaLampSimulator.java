@@ -28,17 +28,23 @@ public class LavaLampSimulator {
     private final SecureRandom secureRandom;
     private final double damping = 0.999;
     private long lastUpdateNs;
-    private final Color fixedColor;
+    private final Color color1;
+    private final Color color2;
 
     public LavaLampSimulator(int width, int height, int nbBlobs, byte[] seed) {
-        this(width, height, nbBlobs, seed, null);
+        this(width, height, nbBlobs, seed, null, null);
     }
 
-    public LavaLampSimulator(int width, int height, int nbBlobs, byte[] seed, Color fixedColor) {
+    public LavaLampSimulator(int width, int height, int nbBlobs, byte[] seed, Color color1) {
+        this(width, height, nbBlobs, seed, color1, null);
+    }
+
+    public LavaLampSimulator(int width, int height, int nbBlobs, byte[] seed, Color color1, Color color2) {
         this.width = width;
         this.height = height;
         this.secureRandom = new SecureRandom(seed != null ? seed : SecureRandom.getSeed(16));
-        this.fixedColor = fixedColor;
+        this.color1 = color1;
+        this.color2 = color2;
         initBlobs(nbBlobs);
         this.lastUpdateNs = System.nanoTime();
     }
@@ -53,8 +59,16 @@ public class LavaLampSimulator {
             b.vx = (secureRandom.nextDouble() - 0.5) * 0.2;
             b.vy = (secureRandom.nextDouble() - 0.5) * 0.2;
             b.radius = 0.08 + secureRandom.nextDouble() * 0.2;
-            if (fixedColor != null) {
-                float[] hsb = Color.RGBtoHSB(fixedColor.getRed(), fixedColor.getGreen(), fixedColor.getBlue(), null);
+
+            Color baseColor = null;
+            if (color1 != null && color2 != null) {
+                baseColor = (i % 2 == 0) ? color1 : color2;
+            } else if (color1 != null) {
+                baseColor = color1;
+            }
+
+            if (baseColor != null) {
+                float[] hsb = Color.RGBtoHSB(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), null);
                 float newBrightness = (float) (hsb[2] * (0.5 + secureRandom.nextDouble() * 0.5));
                 b.color = Color.getHSBColor(hsb[0], hsb[1], newBrightness);
             } else {

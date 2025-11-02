@@ -24,11 +24,15 @@ public class LavaLampEntropyGenerator {
     private static final int SAVE_INTERVAL = 5; // Save every 5 generations
 
     public LavaLampEntropyGenerator(int width, int height, int nbBlobs, int qualityFactor, byte[] initialSeed) {
-        this(width, height, nbBlobs, qualityFactor, initialSeed, null);
+        this(width, height, nbBlobs, qualityFactor, initialSeed, null, null);
     }
 
-    public LavaLampEntropyGenerator(int width, int height, int nbBlobs, int qualityFactor, byte[] initialSeed, java.awt.Color fixedColor) {
-        this.simulator = new LavaLampSimulator(width, height, nbBlobs, initialSeed, fixedColor);
+    public LavaLampEntropyGenerator(int width, int height, int nbBlobs, int qualityFactor, byte[] initialSeed, Color fixedColor) {
+        this(width, height, nbBlobs, qualityFactor, initialSeed, fixedColor, null);
+    }
+
+    public LavaLampEntropyGenerator(int width, int height, int nbBlobs, int qualityFactor, byte[] initialSeed, Color color1, Color color2) {
+        this.simulator = new LavaLampSimulator(width, height, nbBlobs, initialSeed, color1, color2);
         this.entropyCollector = new VirtualLavaEntropy();
         this.qualityFactor = qualityFactor;
 

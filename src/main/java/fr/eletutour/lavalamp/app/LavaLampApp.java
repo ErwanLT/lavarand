@@ -53,8 +53,12 @@ public class LavaLampApp extends JPanel {
         byte[] seed = new byte[32];
         new SecureRandom().nextBytes(seed);
 
+        // Couleurs pour la simulation
+        Color color1 = new Color(255, 100, 0); // Orange
+        Color color2 = new Color(0, 50, 255);   // Bleu
+
         // Initialisation du générateur d'entropie unifié
-        LavaLampEntropyGenerator entropyGenerator = new LavaLampEntropyGenerator(width, height, nbBlobs, qualityFactor, seed);
+        LavaLampEntropyGenerator entropyGenerator = new LavaLampEntropyGenerator(width, height, nbBlobs, qualityFactor, seed, color1, color2);
 
         // Création de la fenêtre
         JFrame frame = new JFrame("Lampe à lave virtuelle — Entropie vivante");

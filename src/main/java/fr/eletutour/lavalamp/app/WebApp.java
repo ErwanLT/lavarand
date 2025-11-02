@@ -24,10 +24,12 @@ public class WebApp {
     public static void main(String[] args) {
         // Initialisation des générateurs d'entropie
         int width = 256, height = 192;
-        Color[] colors = {Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE, Color.MAGENTA, Color.CYAN};
+        Color[] colors1 = {Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE, Color.MAGENTA, Color.CYAN, new Color(255, 100, 0), new Color(0, 50, 255), new Color(100, 255, 0), new Color(255, 0, 100)};
+        Color[] colors2 = {Color.YELLOW, Color.RED, Color.BLUE, Color.GREEN, Color.CYAN, Color.MAGENTA, new Color(0, 50, 255), new Color(255, 100, 0), new Color(255, 0, 100), new Color(100, 255, 0)};
+
         IntStream.range(0, NUM_LAMPS).forEach(i -> {
             LavaLampEntropyGenerator generator = new LavaLampEntropyGenerator(
-                    width, height, 12, 8, SecureRandom.getSeed(32), colors[i % colors.length]
+                    width, height, 12, 8, SecureRandom.getSeed(32), colors1[i % colors1.length], colors2[i % colors2.length]
             );
             entropyGenerators.put(i, generator);
         });
